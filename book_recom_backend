@@ -1,0 +1,126 @@
+from sentence_transformers import SentenceTransformer, util
+import pandas as pd
+import numpy as np
+import torch
+import os
+from rapidfuzz import fuzz
+import faiss
+
+data_path = r"C:\Users\Alvin\OneDrive\Desktop\book recomendation\bookdata\books.csv"
+embedding_file = r"C:\Users\Alvin\OneDrive\Desktop\book recomendation\bookdata\book_embeddings.npy"
+faiss_index_file = r"C:\Users\Alvin\OneDrive\Desktop\book recomendation\bookdata\faiss_index.bin"
+
+data = pd.read_csv(data_path)
+
+titles = data['title'].fillna("").str.strip().str.lower().tolist()
+authors = data['authors'].fillna("").str.strip().str.lower().tolist()
+combined = [f"{t} by {a}" for t, a in zip(titles, authors)]
+texts = combined
+
+model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+
+if os.path.exists(embedding_file):
+    print("Loading saved embeddings...")
+    emb_data = torch.tensor(np.load(embedding_file))
+else:
+    print("Generating embeddings (first time only)...")
+    emb_data = model.encode(texts, convert_to_tensor=True, show_progress_bar=True)
+    np.save(embedding_file, emb_data.cpu().numpy())
+    print("Embeddings saved for future use.")
+
+emb_np = emb_data.cpu().numpy().astype('float32')
+faiss.normalize_L2(emb_np)
+d = emb_np.shape[1]
+
+if os.path.exists(faiss_index_file):
+    print("Loading FAISS index...")
+    index = faiss.read_index(faiss_index_file)
+else:
+    print("Building FAISS index...")
+    index = faiss.IndexFlatIP(d)
+    index.add(emb_np)
+    faiss.write_index(index, faiss_index_file)
+    print("FAISS index saved for future use.")
+TITLE_TH = 60
+COMBINED_TH = 55
+AUTHOR_TH = 75
+
+def try_extract_one(query, choices):
+    
+    best_score = 0
+    best_match = None
+    for choice in choices:
+        scores = [
+            fuzz.token_sort_ratio(query, choice),
+            fuzz.token_set_ratio(query, choice),
+            fuzz.partial_ratio(query, choice)
+        ]
+        score = max(scores)
+        if score > best_score:
+            best_score = score
+            best_match = choice
+    return best_match, best_score, None
+
+query = input("\nEnter a book title or author: ").strip().lower()
+
+res_title = try_extract_one(query, titles)
+title_match, title_score, _ = (res_title if res_title else (None, 0, None))
+
+res_comb = try_extract_one(query, combined)
+comb_match, comb_score, _ = (res_comb if res_comb else (None, 0, None))
+
+res_author = try_extract_one(query, authors)
+author_match, author_score, _ = (res_author if res_author else (None, 0, None))
+
+matches = [
+    ("title", title_match, title_score),
+    ("combined", comb_match, comb_score),
+    ("author", author_match, author_score)
+]
+
+matches_sorted = sorted(matches, key=lambda x: x[2], reverse=True)
+match_type, chosen_query, best_score = matches_sorted[0]
+auto_corrected = False
+
+if match_type == "title" and best_score >= TITLE_TH:
+    auto_corrected = True
+    print(f"\nAuto-corrected to title: '{chosen_query}' (score: {best_score:.1f})")
+elif match_type == "combined" and best_score >= COMBINED_TH:
+    auto_corrected = True
+    print(f"\nAuto-corrected to: '{chosen_query}' (score: {best_score:.1f})")
+elif match_type == "author" and best_score >= AUTHOR_TH:
+    auto_corrected = True
+    print(f"\n Auto-corrected to author: '{chosen_query}' (score: {best_score:.1f})")
+else:
+    
+    suggestions = sorted(
+        [(max(
+            fuzz.token_sort_ratio(query, t),
+            fuzz.token_set_ratio(query, t),
+            fuzz.partial_ratio(query, t)
+        ), t) for t in titles],
+        reverse=True
+    )
+    best_score, chosen_query = suggestions[0]
+    auto_corrected = True
+    print(f"\nNo high-score match found. Using best suggestion: '{chosen_query}' (score: {best_score:.1f})")
+
+print(f"\n Searching for similar books to '{chosen_query}'...\n")
+emb_qry = model.encode(chosen_query, convert_to_tensor=False).astype('float32').reshape(1, -1)
+faiss.normalize_L2(emb_qry)
+
+k = 6
+D, I = index.search(emb_qry, k)
+
+print(f"\nBecause you liked '{chosen_query}', you might also like:\n")
+for rank, (idx, score) in enumerate(zip(I[0], D[0]), 1):
+    title = data.loc[idx, 'title']
+    author = data.loc[idx, 'authors']
+    rating = data.loc[idx, 'average_rating'] if 'average_rating' in data.columns else ""
+    
+    score_scaled = score * 10
+    
+    print(f"Match {rank}: {title} — by {author}")
+    if rating != "":
+        print(f" Average Rating: {rating}")
+    print(f" Similarity Score: {score_scaled:.2f} / 10\n")
