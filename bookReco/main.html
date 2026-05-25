@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Book Recommendation System</title>
+  <link rel="stylesheet" href="main.css" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Raleway:wght@400;700&display=swap"
+    rel="stylesheet">
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="newRelease.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+</head>
+
+<body>
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="logo-readmate">read<span class="logo-gradient">Mate</span></div>
+
+
+    <nav class="menu-bar">
+      <div class="menu-item"><a href="main.html" class="home-link">Home</a></div>
+      <div class="menu-item dropdown">
+        <a href="#">Genre ▾</a>
+        <div class="dropdown-content">
+          <a href="#Historical Fiction">Historical Fiction</a>
+          <a href="#fiction">Fiction</a>
+          <a href="#sci-fi">Sci-Fi</a>
+          <a href="#fantasy">Fantasy</a>
+          <a href="#Literature">Literature</a>
+          <a href="#Plays">Plays</a>
+          <a href="#Romance">Romance</a>
+        </div>
+      </div>
+      <div class="menu-item dropdown">
+        <a href="#">Years ▾</a>
+        <div class="dropdown-content">
+          <a href="#2024">2024</a>
+          <a href="#2023">2023</a>
+          <a href="#2022">2022</a>
+          <a href="#2021">2021</a>
+          <a href="#2020">2020</a>
+          <a href="#2019">2019</a>
+          <a href="#2018">2018</a>
+        </div>
+      </div>
+      <div class="menu-item"><a href="about_contact.html">About Us</a></div>
+      <div class="menu-item"><a href="about_contact.html">Contact Us</a></div>
+    </nav>
+    <div class="login-btn">
+      <button id="loginBtn">Login</button>
+    </div>
+  </header>
+
+  <!-- Login/Register Popup -->
+  <div class="wrapper">
+    <div class="overlay"></div>
+    <span class="icon-close">&times;</span>
+    <div class="popup-container">
+      <!-- Login Form -->
+      <div class="form_box login">
+        <h2>Login</h2>
+        <form action="#" method="POST">
+          <div class="input_box">
+            <input type="email" required>
+            <label>Email</label>
+            <span class="icon"><ion-icon name="mail"></ion-icon></span>
+          </div>
+          <div class="input_box">
+            <input type="password" required>
+            <label>Password</label>
+            <span class="icon"><ion-icon name="lock-closed"></ion-icon></span>
+          </div>
+          <div class="remember_forgot">
+            <label><input type="checkbox"> Remember me</label>
+            <a href="#">Forgot password?</a>
+          </div>
+          <button type="submit" class="btn">Login</button>
+          <div class="login-register">
+            <p>Don't have an account? <a href="#" class="register-link">Register</a></p>
+          </div>
+        </form>
+      </div>
+
+      <!-- Registration Form -->
+      <div class="form_box register">
+        <h2>Register</h2>
+        <form action="#" method="POST">
+          <div class="input_box">
+            <input type="email" required>
+            <label>Email</label>
+            <span class="icon"><ion-icon name="mail"></ion-icon></span>
+          </div>
+          <div class="input_box">
+            <input type="text" required>
+            <label>Username</label>
+            <span class="icon"><ion-icon name="person"></ion-icon></span>
+          </div>
+          <div class="input_box">
+            <input type="password" required>
+            <label>Password</label>
+            <span class="icon"><ion-icon name="lock-closed"></ion-icon></span>
+          </div>
+          <div class="remember_forgot">
+            <label><input type="checkbox"> I agree to terms & conditions</label>
+          </div>
+          <button type="submit" class="btn">Register</button>
+          <div class="login-register">
+            <p>Already have an account? <a href="#" class="login-link">Login</a></p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Discover Your Next Favorite Book</h1>
+      <p>Personalized recommendations based on your taste and interests.</p>
+
+      <form class="search-box" id="searchForm">
+        <input type="text" id="query" name="query" placeholder="Search for books..." />
+        <button type="submit">Search</button>
+      </form>
+
+      <div id="results"></div>
+      <h2 id="relatedHeading" style="display:none;">Related Books</h2>
+      <div id="relatedBooks"></div>
+    </div>
+  </section>
+  <!-- quote section -->
+  <section class="quote-section">
+    <div class="quote-container">
+      <div class="quote-content fade" id="quote-box">
+        <p class="quote-text" id="quote">"Innovation distinguishes between a leader and a follower."</p>
+        <div class="author-info">
+          <img id="author-img" src="" alt="Author" class="author-img">
+          <span class="author-name" id="author-name">— Steve Jobs</span>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- book section -->
+  <section class="books-section" id="new-releases-section">
+    <h2>New Releases</h2>
+    <div class="carousel-container">
+      <div class="carousel" id="new-releases-carousel">
+       
+       
+      </div>
+    </div>
+    <div class="show-more-container">
+      <button id="show-more-btn">Show More</button>
+    </div>
+  </section>
+    <!-- new release section ends here -->
+  
+  <!-- Rating-Based Recommendations Section -->
+  <section class="books-section" id="rating-recommendations-section">
+    <h2>Top Rated Books</h2>
+    <div class="filter-buttons">
+      <button class="filter-btn active" data-filter="new-trending">New & Trending (2015-2025)</button>
+      <button class="filter-btn" data-filter="recent-high-rated">Recent High Rated</button>
+      <button class="filter-btn" data-filter="highest-rated">Highest Rated</button>
+      <button class="filter-btn" data-filter="most-reviewed">Most Reviewed</button>
+      <button class="filter-btn" data-filter="popular">Most Popular</button>
+    </div>
+    <div class="carousel-container">
+      <div class="carousel" id="rating-recommendations-carousel">
+        <!-- Rating-based recommendations will be loaded here -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Personalized Recommendations Section -->
+  <section class="books-section" id="personalized-recommendations-section">
+    <h2>Recommended For You</h2>
+    <p class="section-subtitle">Based on rating patterns and popularity</p>
+    <div class="carousel-container">
+      <div class="carousel" id="personalized-recommendations-carousel">
+        <!-- Personalized recommendations will be loaded here -->
+      </div>
+    </div>
+  </section>
+  <!-- feedback section -->
+  <section class="feedback-section" id="feedback">
+    <h2>What Our Readers Say</h2>
+    <div class="feedback-container"> 
+      <!-- existing feedback cards here -->
+      <!-- Feedback Card 1 -->
+      <div id="feedback" class="feedback-card">
+        <div class="user-pic">
+          <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="John Doe">
+        </div>
+        <div class="feedback-content">
+          <h3>John Doe</h3>
+          <p>"This website made finding my next favorite book so easy! Love the recommendations."</p>
+          <p class="user-rating">⭐ 5.0</p>
+        </div>
+      </div>
+
+      <!-- Feedback Card 2 -->
+      <div class="feedback-card">
+        <div class="user-pic">
+          <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Emily Smith">
+        </div>
+        <div class="feedback-content">
+          <h3>Emily Smith</h3>
+          <p>"The interface is sleek and futuristic. I love the motivational quotes and book suggestions."</p>
+          <p class="user-rating">⭐ 4.8</p>
+        </div>
+      </div>
+
+      <!-- Feedback Card 3 -->
+      <div class="feedback-card">
+        <div class="user-pic">
+          <img src="https://randomuser.me/api/portraits/men/56.jpg" alt="Alex Johnson">
+        </div>
+        <div class="feedback-content">
+          <h3>Alex Johnson</h3>
+          <p>"I found books I never knew existed. Highly recommend this platform for book lovers!"</p>
+          <p class="user-rating">⭐ 4.9</p>
+        </div>
+      </div>
+    </div>
+    <!-- Feedback button -->
+    <button class="feedback-btn">Give Feedback</button>
+  </section>
+
+  <!-- Feedback Form Popup -->
+  <div class="feedback-popup">
+    <span class="close-feedback">&times;</span>
+    <form class="feedback-form-popup" action="#" method="post">
+      <h3>Share Your Feedback</h3>
+      <input type="email" name="email" placeholder="Your Email" required>
+      <textarea name="message" placeholder="Your Feedback" required></textarea>
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+
+  <!-- Book Details Modal -->
+  <div class="book-details-modal" id="bookDetailsModal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <div class="book-details-container">
+        <div class="book-details-image">
+          <img id="modalBookCover" src="" alt="Book Cover" onerror="this.src='https://via.placeholder.com/300x450?text=No+Cover'">
+        </div>
+        <div class="book-details-info">
+          <h2 id="modalBookTitle">Book Title</h2>
+          <p class="book-author" id="modalBookAuthor">Author Name</p>
+          <div class="book-meta">
+            <span id="modalBookRating" class="book-rating"></span>
+            <span id="modalBookYear" class="book-year"></span>
+            <span id="modalBookSubject" class="book-subject"></span>
+          </div>
+          <div class="book-description" id="modalBookDescription">
+            <p>Loading description...</p>
+          </div>
+          <div class="book-additional-info" id="modalBookAdditional">
+            <h4>Additional Information</h4>
+            <div id="modalBookDetails"></div>
+          </div>
+          <div class="book-actions">
+            <button class="btn-find-similar" id="btnFindSimilar">Find Similar Books</button>
+            <a href="#" class="btn-external-link" id="btnOpenLibrary" target="_blank">View on Open Library</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-logo">
+        <h2>readMate</h2>
+        <p>Your ultimate book recommendation platform.</p>
+      </div>
+
+      <div class="footer-links">
+        <div class="footer-section">
+          <h3>Explore</h3>
+          <a href="#"><i class="fas fa-home"></i>Home</a>
+          <a href="#top-rated-section"><i class="fas fa-star"></i> Top Rated</a>
+          <a href="#new-releases-section"><i class="fas fa-book"></i> New Releases</a>
+        </div>
+        <div class="footer-section">
+          <h3>Company</h3>
+          <a href="about_contact.html"><i class="fas fa-info-circle"></i>About Us</a>
+          <a href="about_contact.html"><i class="fas fa-envelope"></i>Contact</a>
+          <a href="#feedback"><i class="fas fa-comments"></i> Feedback</a>
+        </div>
+        <div class="footer-section">
+          <h3>Follow Us</h3>
+          <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2025 readMate. All rights reserved.</p>
+    </div>
+  </footer>
+
+
+  <script src="recommendationEngine.js"></script>
+  <script src="script.js"></script>
+</body>
+
+</html>

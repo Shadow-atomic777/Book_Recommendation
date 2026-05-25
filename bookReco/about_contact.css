@@ -1,0 +1,151 @@
+/* Body and fonts */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: #fff;
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px);
+}
+
+.navbar a, .navbar .tab-btn {
+    color: #1b1919;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.navbar a:hover, .navbar .tab-btn:hover {
+    background: #00ffe0;
+    color: #000;
+    border: 1px solid #00ffe0;
+}
+
+/* Sections with glass effect */
+.section {
+    display: none;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.section.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.glass {
+    background: rgba(255,255,255,0.05);
+    border-radius: 20px;
+    padding: 40px;
+    margin: 40px auto;
+    max-width: 900px;
+    box-shadow: 0 8px 32px 0 rgba(0,0,0,0.37);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+/* Contact wrapper */
+.contact-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    justify-content: center;
+    align-items: flex-start;
+    margin-top: 30px;
+}
+
+.contact-wrapper form, .contact-wrapper .map {
+    flex: 1 1 400px;
+}
+
+/* Glass form */
+.glass-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: rgba(255,255,255,0.05);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+}
+
+.glass-form input, .glass-form textarea {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+    font-size: 16px;
+}
+
+.glass-form input::placeholder, .glass-form textarea::placeholder {
+    color: #aaa;
+}
+
+.neon-btn {
+    background: transparent;
+    color: #00ffe0;
+    border: 2px solid #00ffe0;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.neon-btn:hover {
+    background: #00ffe0;
+    color: #000;
+    box-shadow: 0 0 20px #00ffe0, 0 0 40px #00ffe0;
+}
+
+.success-msg {
+    color: #00ff7f;
+    font-weight: bold;
+}
+
+/* Map styling */
+.glass-map {
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+}
+
+/* Social links */
+.social-links {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+/* Responsive */
+@media(max-width:900px){
+    .contact-wrapper {
+        flex-direction: column;
+        gap: 20px;
+    }
+}
