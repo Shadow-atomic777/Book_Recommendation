@@ -1,0 +1,9 @@
+sentence-transformers
+pandas
+numpy
+torch
+rapidfuzz
+faiss-cpu
+requests
+matplotlib
+seaborn
